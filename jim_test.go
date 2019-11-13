@@ -4,95 +4,25 @@ import (
 	"bytes"
 	"context"
 	"io"
-	"os"
+	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
-func Test_Stdin(t *testing.T) {
+func Test_Jim(t *testing.T) {
+	r := require.New(t)
+
+	bb := &bytes.Buffer{}
+
 	ctx := context.Background()
+	ctx = context.WithValue(ctx, "stdout", bb)
 
-	r := Stdin(ctx)
-	if r != os.Stdin {
-		t.Fatalf("expected os.Stdin got %s", r)
-	}
+	r.NoError(Jim(ctx, []string{}))
 
-	var in io.Reader
-	in = &bytes.Buffer{}
-	ctx = context.WithValue(ctx, "stdin", in)
-
-	r = Stdin(ctx)
-	if r != in {
-		t.Fatalf("expected %T got %s", in, r)
-	}
-
-	in = &bytes.Buffer{}
-	ctx = tContext{
-		Context: ctx,
-		stdin:   in,
-	}
-
-	r = Stdin(ctx)
-	if r != in {
-		t.Fatalf("expected %T got %s", in, r)
-	}
-}
-
-func Test_Stdout(t *testing.T) {
-	ctx := context.Background()
-
-	w := Stdout(ctx)
-	if w != os.Stdout {
-		t.Fatalf("expected os.Stdout got %s", w)
-	}
-
-	var out io.Writer
-	out = &bytes.Buffer{}
-	ctx = context.WithValue(ctx, "stdout", out)
-
-	w = Stdout(ctx)
-	if w != out {
-		t.Fatalf("expected %T got %s", out, w)
-	}
-
-	out = &bytes.Buffer{}
-	ctx = tContext{
-		Context: ctx,
-		stdout:  out,
-	}
-
-	w = Stdout(ctx)
-	if w != out {
-		t.Fatalf("expected %T got %s", out, w)
-	}
-}
-
-func Test_Stderr(t *testing.T) {
-	ctx := context.Background()
-
-	w := Stderr(ctx)
-	if w != os.Stderr {
-		t.Fatalf("expected os.Stderr got %s", w)
-	}
-
-	var out io.Writer
-	out = &bytes.Buffer{}
-	ctx = context.WithValue(ctx, "stderr", out)
-
-	w = Stderr(ctx)
-	if w != out {
-		t.Fatalf("expected %T got %s", out, w)
-	}
-
-	out = &bytes.Buffer{}
-	ctx = tContext{
-		Context: ctx,
-		stderr:  out,
-	}
-
-	w = Stderr(ctx)
-	if w != out {
-		t.Fatalf("expected %T got %s", out, w)
-	}
+	exp := strings.TrimSpace(jim)
+	act := strings.TrimSpace(bb.String())
+	r.Contains(exp, act)
 }
 
 type tContext struct {
