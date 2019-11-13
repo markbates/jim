@@ -1,12 +1,11 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
-	"path/filepath"
 
 	"github.com/markbates/jim"
 )
@@ -50,63 +49,15 @@ func run() error {
 		return taskHelp(t)
 	}
 
-	return runTask(t)
+	ctx := context.Background()
+	return jim.Run(ctx, t)
 }
 
 func taskHelp(t *jim.Task) error {
-	c := exec.Command("go", "doc", fmt.Sprintf("%s.%s", t.Pkg, t.Name))
-	c.Stdin = os.Stdin
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	return c.Run()
-}
-
-func runTask(t *jim.Task) error {
-	od := filepath.Join(t.Dir, ".jim")
-	out := filepath.Join(od, "main.go")
-	os.MkdirAll(od, 0755)
-	defer os.RemoveAll(od)
-	defer func() {
-		if err := recover(); err != nil {
-			os.RemoveAll(od)
-		}
-	}()
-
-	f, err := os.Create(out)
+	s, err := jim.Help(t)
 	if err != nil {
 		return err
 	}
-	defer f.Close()
-
-	fmt.Fprintf(f, tmpl, t.Pkg, t.Sel, t.Name)
-
-	args := []string{"run", out}
-	args = append(args, t.Args...)
-
-	c := exec.Command("go", args...)
-	c.Stdin = os.Stdin
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-
-	if err := c.Run(); err != nil {
-		return err
-	}
+	fmt.Println(s)
 	return nil
 }
-
-const tmpl = `package main
-
-import(
-		"context"
-		"log"
-		"os"
-)
-import "%s"
-
-func main() {
-		ctx := context.Background()
-		if err := %s.%s(ctx, os.Args[1:]); err != nil {
-				log.Fatal(err)
-		}
-}
-`
