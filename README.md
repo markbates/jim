@@ -86,7 +86,7 @@ The `db:seed` part is converted to the package `<module path>/db/seed` which, ho
 
 ### Running a Task via API
 
-To run your task programmatically in your application, give it a `context.Context` and you're good to go. :)
+To run your task programmatically in your application, give it a `context.Context`, some arguments, and you're good to go. :)
 
 ### Getting Task Help
 
