@@ -16,3 +16,7 @@ func Another(ctx context.Context, args []string) error {
 	fmt.Println("doing another thing", args)
 	return nil
 }
+
+func NotATask(int, int) error {
+	return nil
+}
