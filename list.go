@@ -17,6 +17,7 @@ import (
 
 var defaultIgnoredFolders = []string{".", "_", "vendor", "node_modules", "testdata"}
 
+// List parses the AST at, and below, the given root looking for Jim tasks.
 func List(root string) ([]*Task, error) {
 	var tasks []*Task
 	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
