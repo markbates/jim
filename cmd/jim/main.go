@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"log"
@@ -50,7 +51,8 @@ func run() error {
 		return taskHelp(t)
 	}
 
-	return runTask(t)
+	ctx := context.Background()
+	return jim.Run(ctx, t)
 }
 
 func taskHelp(t *jim.Task) error {
