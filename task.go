@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"path"
 	"strings"
+	"unicode"
+	"unicode/utf8"
 
 	"github.com/gobuffalo/here"
 )
@@ -22,7 +24,7 @@ func New(args []string) (*Task, error) {
 	}
 
 	parts := strings.Split(args[0], ":")
-	if len(parts) < 2 {
+	if len(parts) < 1 {
 		return nil, fmt.Errorf("malformed task name %s", args[0])
 	}
 
@@ -38,11 +40,25 @@ func New(args []string) (*Task, error) {
 		Args: args[1:],
 	}
 
-	pkgs := parts[:len(parts)-1]
-	t.Sel = pkgs[len(pkgs)-1]
-	t.Name = parts[len(parts)-1]
+	var pkg string
+	var name string
 
-	t.Pkg = path.Join(pkgs...)
-	t.Pkg = path.Join(info.ImportPath, t.Pkg)
+	if len(parts) == 1 {
+		pkg = info.ImportPath
+		name = parts[0]
+	} else {
+		pkg = strings.Join(parts[:len(parts)-1], "/")
+		pkg = path.Join(info.ImportPath, pkg)
+		name = parts[len(parts)-1]
+	}
+	t.Pkg = pkg
+	t.Name = name
+
+	rn, _ := utf8.DecodeRuneInString(t.Name)
+	if !unicode.IsUpper(rn) {
+		return nil, fmt.Errorf("functions must be exported and start with an upper case: %s", t.Name)
+	}
+
+	t.Sel = path.Base(t.Pkg)
 	return t, nil
 }

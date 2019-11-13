@@ -2,25 +2,16 @@ package jim
 
 import (
 	"context"
-	"io"
+	"fmt"
 )
 
-func In(ctx context.Context) io.Reader {
-	c := NewContext(ctx)
-	return c.Stdin()
+func Jim(ctx context.Context, args []string) error {
+	out := Stdout(ctx)
+	fmt.Fprintln(out, jim)
+	return nil
 }
 
-func Out(ctx context.Context) io.Writer {
-	c := NewContext(ctx)
-	return c.Stdout()
-}
-
-func Err(ctx context.Context) io.Writer {
-	c := NewContext(ctx)
-	return c.Stderr()
-}
-
-const Jim = `
+const jim = `
 MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
 MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMD8MMMMMNMMNMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
 MMMMMMMMMMMMMMMMMMMMMMMMMMMMMM8NOZNMMNMMDMMMMOMDMMMMMNMMMMMMMMMMMMMMMMMMMMMMMMMM
