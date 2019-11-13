@@ -97,15 +97,14 @@ func runTask(t *jim.Task) error {
 const tmpl = `package main
 
 import(
-"context"
-"log"
-"os"
-"github.com/markbates/jim"
+		"context"
+		"log"
+		"os"
 )
 import "%s"
 
 func main() {
-		ctx := jim.NewContext(context.Background())
+		ctx := context.Background()
 		if err := %s.%s(ctx, os.Args[1:]); err != nil {
 				log.Fatal(err)
 		}
