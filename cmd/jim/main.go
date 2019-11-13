@@ -35,7 +35,13 @@ func run() error {
 		return err
 	}
 
-	t, err := jim.New(opts.Args())
+	oargs = opts.Args()
+	if opts.help && len(oargs) == 0 {
+		opts.Usage()
+		return nil
+	}
+
+	t, err := jim.New(oargs)
 	if err != nil {
 		return err
 	}
