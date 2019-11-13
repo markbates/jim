@@ -3,7 +3,6 @@ package jim
 import (
 	"context"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"text/template"
 )
@@ -36,11 +35,7 @@ func Run(ctx context.Context, t *Task) error {
 	args := []string{"run", out}
 	args = append(args, t.Args...)
 
-	c := exec.CommandContext(ctx, "go", args...)
-	c.Stdin = Stdin(ctx)
-	c.Stdout = Stdout(ctx)
-	c.Stderr = Stderr(ctx)
-
+	c := command(ctx, "go", args...)
 	if err := c.Run(); err != nil {
 		return err
 	}
