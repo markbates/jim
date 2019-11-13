@@ -18,6 +18,11 @@ type Task struct {
 	Name string // Something
 }
 
+func (t Task) String() string {
+	s := fmt.Sprintf("%s:%s", t.Pkg, t.Name)
+	return strings.ReplaceAll(s, "/", ":")
+}
+
 func New(args []string) (*Task, error) {
 	if len(args) == 0 {
 		return nil, fmt.Errorf("missing task name")
@@ -48,7 +53,9 @@ func New(args []string) (*Task, error) {
 		name = parts[0]
 	} else {
 		pkg = strings.Join(parts[:len(parts)-1], "/")
-		pkg = path.Join(info.ImportPath, pkg)
+		if !strings.HasPrefix(pkg, info.ImportPath) {
+			pkg = path.Join(info.ImportPath, pkg)
+		}
 		name = parts[len(parts)-1]
 	}
 	t.Pkg = pkg

@@ -100,3 +100,14 @@ package seed // import "ref/db/seed"
 func Users(ctx context.Context, args []string) error
     Users puts all of the users into all of the databases
 ```
+
+## Listing Available Tasks
+
+```bash
+$ jim list
+
+ref:db:Seed
+ref:db:seed:Users
+ref:task:Another
+ref:task:Something
+```

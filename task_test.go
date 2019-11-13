@@ -31,4 +31,12 @@ func Test_New(t *testing.T) {
 	r.Equal("github.com/markbates/jim", k.Pkg)
 	r.Equal("jim", k.Sel)
 	r.Equal("Users", k.Name)
+
+	k, err = New([]string{"github.com:markbates:jim:Jim"})
+	r.NoError(err)
+
+	r.NotZero(k)
+	r.Equal("github.com/markbates/jim", k.Pkg)
+	r.Equal("jim", k.Sel)
+	r.Equal("Jim", k.Name)
 }

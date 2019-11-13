@@ -10,3 +10,5 @@ func Users(ctx context.Context, args []string) error {
 	fmt.Println("loading users", args)
 	return nil
 }
+
+func NotATask() {}
