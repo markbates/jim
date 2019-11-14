@@ -25,6 +25,11 @@ func Test_List(t *testing.T) {
 		act = append(act, t.String())
 	}
 
-	exp := []string{"ref:db:Seed", "ref:db:seed:Users", "ref:task:Another", "ref:task:Something"}
+	exp := []string{
+		"ref/db/seed:Users",
+		"ref/db:Seed",
+		"ref/task:Another",
+		"ref/task:Something",
+	}
 	r.Equal(exp, act)
 }

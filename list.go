@@ -19,13 +19,39 @@ var defaultIgnoredFolders = []string{".", "_", "vendor", "node_modules", "testda
 
 // List parses the AST at, and below, the given root looking for Jim tasks.
 func List(root string) ([]*Task, error) {
+	pwd, err := os.Getwd()
+	if err != nil {
+		return nil, err
+	}
+	defer os.Chdir(pwd)
+	if err := os.Chdir(root); err != nil {
+		return nil, err
+	}
+
+	h := here.New()
+	cur, err := h.Current()
+
+	if err != nil {
+		return nil, err
+	}
+
 	var tasks []*Task
-	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
+	err = filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
+
 		if !info.IsDir() {
 			return nil
+		}
+
+		her, err := h.Dir(path)
+		if err != nil {
+			return err
+		}
+
+		if her.Module.Path != cur.Module.Path {
+			return filepath.SkipDir
 		}
 
 		base := filepath.Base(path)

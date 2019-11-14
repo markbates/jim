@@ -19,8 +19,7 @@ type Task struct {
 }
 
 func (t Task) String() string {
-	s := fmt.Sprintf("%s:%s", t.Pkg, t.Name)
-	return strings.ReplaceAll(s, "/", ":")
+	return fmt.Sprintf("%s:%s", t.Pkg, t.Name)
 }
 
 func New(args []string) (*Task, error) {
