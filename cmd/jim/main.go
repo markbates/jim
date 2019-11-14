@@ -43,7 +43,7 @@ func run() error {
 		return nil
 	}
 
-	if oargs[0] == "list" {
+	if len(oargs) > 0 && oargs[0] == "list" {
 		pwd, err := os.Getwd()
 		if err != nil {
 			return err
@@ -51,6 +51,10 @@ func run() error {
 		tasks, err := jim.List(pwd)
 		if err != nil {
 			return err
+		}
+
+		if len(tasks) == 0 {
+			return nil
 		}
 
 		if !opts.json {
