@@ -42,19 +42,40 @@ func Run(ctx context.Context, t *Task) error {
 	return nil
 }
 
-const tmpl = `package main
+const tmpl = `
+package main
 
-import(
-		"context"
-		"log"
-		"os"
-		"{{.Pkg}}"
+import (
+	"context"
+	"log"
+	"os"
+	"os/signal"
+
+	"{{.Pkg}}"
 )
 
 func main() {
-		ctx := context.Background()
-		if err := {{.Sel}}.{{.Name}}(ctx, os.Args[1:]); err != nil {
-				log.Fatal(err)
+	ctx := context.Background()
+
+	// trap Ctrl+C and call cancel on the context
+	ctx, cancel := context.WithCancel(ctx)
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	defer func() {
+		signal.Stop(c)
+		cancel()
+	}()
+
+	go func() {
+		select {
+		case <-c:
+			cancel()
+		case <-ctx.Done():
 		}
+	}()
+
+	if err := {{.Sel}}.{{.Name}}(ctx, os.Args[1:]); err != nil {
+		log.Fatal(err)
+	}
 }
 `
