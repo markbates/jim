@@ -49,6 +49,8 @@ func List(ctx context.Context, args []string) error {
 
 	w := tabwriter.NewWriter(stdout, 0, 0, 0, ' ', tabwriter.Debug)
 	defer w.Flush()
+	fmt.Fprintln(w, "Task \t GoDoc")
+	fmt.Fprintln(w, "---- \t -----")
 	for _, t := range tasks {
 		fmt.Fprintf(w,
 			"%s \t %s\n",
