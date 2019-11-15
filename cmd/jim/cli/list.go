@@ -39,13 +39,15 @@ func List(ctx context.Context, args []string) error {
 		return nil
 	}
 
+	stdout := jim.Stdout(ctx)
+
 	if opts.json {
-		enc := json.NewEncoder(os.Stdout)
+		enc := json.NewEncoder(stdout)
 		enc.SetIndent("", " ")
 		return enc.Encode(tasks)
 	}
 
-	w := tabwriter.NewWriter(os.Stdout, 0, 0, 0, ' ', tabwriter.Debug)
+	w := tabwriter.NewWriter(stdout, 0, 0, 0, ' ', tabwriter.Debug)
 	defer w.Flush()
 	for _, t := range tasks {
 		fmt.Fprintf(w,
