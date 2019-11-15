@@ -85,8 +85,7 @@ func parse(root string) ([]*Task, error) {
 		return nil, err
 	}
 
-	h := here.New()
-	info, err := h.Dir(root)
+	info, err := here.Dir(root)
 	if err != nil {
 		return nil, err
 	}

@@ -32,9 +32,7 @@ func New(args []string) (*Task, error) {
 		return nil, fmt.Errorf("missing task name")
 	}
 
-	h := here.New()
-
-	info, err := h.Current()
+	info, err := here.Current()
 	if err != nil {
 		return nil, err
 	}
