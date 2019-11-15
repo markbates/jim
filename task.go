@@ -3,6 +3,7 @@ package jim
 import (
 	"fmt"
 	"path"
+	"path/filepath"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -19,17 +20,16 @@ type Task struct {
 }
 
 func (t Task) String() string {
-	return fmt.Sprintf("%s:%s", t.Pkg, t.Name)
+	return fmt.Sprintf("%s.%s", t.Pkg, t.Name)
+}
+
+func (t Task) GoDoc() string {
+	return fmt.Sprintf("https://godoc.org/%s#%s", t.Pkg, t.Name)
 }
 
 func New(args []string) (*Task, error) {
 	if len(args) == 0 {
 		return nil, fmt.Errorf("missing task name")
-	}
-
-	parts := strings.Split(args[0], ":")
-	if len(parts) < 1 {
-		return nil, fmt.Errorf("malformed task name %s", args[0])
 	}
 
 	h := here.New()
@@ -44,27 +44,24 @@ func New(args []string) (*Task, error) {
 		Args: args[1:],
 	}
 
-	var pkg string
-	var name string
+	ext := filepath.Ext(args[0])
+	t.Pkg = strings.TrimSuffix(args[0], ext)
+	t.Name = strings.TrimPrefix(ext, ".")
 
-	if len(parts) == 1 {
-		pkg = info.ImportPath
-		name = parts[0]
-	} else {
-		pkg = strings.Join(parts[:len(parts)-1], "/")
-		if !strings.HasPrefix(pkg, info.ImportPath) {
-			pkg = path.Join(info.ImportPath, pkg)
-		}
-		name = parts[len(parts)-1]
+	if len(ext) == 0 {
+		t.Name = args[0]
+		t.Pkg = info.ImportPath
 	}
-	t.Pkg = pkg
-	t.Name = name
 
-	rn, _ := utf8.DecodeRuneInString(t.Name)
-	if !unicode.IsUpper(rn) {
-		return nil, fmt.Errorf("functions must be exported and start with an upper case: %s", t.Name)
+	if !strings.HasPrefix(t.Pkg, info.ImportPath) {
+		t.Pkg = path.Join(info.ImportPath, t.Pkg)
 	}
 
 	t.Sel = path.Base(t.Pkg)
+
+	rn, _ := utf8.DecodeRuneInString(t.Name)
+	if !unicode.IsUpper(rn) {
+		return nil, fmt.Errorf("functions must be publicly exported %s", args[0])
+	}
 	return t, nil
 }

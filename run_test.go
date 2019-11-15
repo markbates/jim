@@ -33,7 +33,7 @@ func Test_Run(t *testing.T) {
 	act := strings.TrimSpace(out.String())
 	r.Equal(exp, act)
 
-	k, err = New([]string{"unknown:BadTask"})
+	k, err = New([]string{"unknown.BadTask"})
 	r.NoError(err)
 
 	err = Run(ctx, k)

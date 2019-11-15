@@ -2,13 +2,13 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
 	"os"
 
 	"github.com/markbates/jim"
+	"github.com/markbates/jim/cmd/jim/cli"
 )
 
 type cmdOptions struct {
@@ -27,10 +27,8 @@ func run() error {
 	oargs := os.Args[1:]
 
 	opts := cmdOptions{
-		FlagSet: flag.NewFlagSet("", flag.ContinueOnError),
+		FlagSet: flag.NewFlagSet("jim", flag.ContinueOnError),
 	}
-	opts.BoolVar(&opts.json, "json", false, "display as json")
-	opts.BoolVar(&opts.help, "help", false, "display help")
 	opts.BoolVar(&opts.help, "h", false, "display help")
 
 	if err := opts.Parse(oargs); err != nil {
@@ -44,30 +42,8 @@ func run() error {
 	}
 
 	if len(oargs) > 0 && oargs[0] == "list" {
-		pwd, err := os.Getwd()
-		if err != nil {
-			return err
-		}
-		tasks, err := jim.List(pwd)
-		if err != nil {
-			return err
-		}
-
-		if len(tasks) == 0 {
-			return nil
-		}
-
-		if !opts.json {
-			for _, t := range tasks {
-				fmt.Println(t)
-			}
-			return nil
-		}
-
-		enc := json.NewEncoder(os.Stdout)
-		enc.SetIndent("", " ")
-		return enc.Encode(tasks)
-
+		ctx := context.Background()
+		return cli.List(ctx, oargs[1:])
 	}
 
 	t, err := jim.New(oargs)

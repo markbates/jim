@@ -26,10 +26,10 @@ func Test_List(t *testing.T) {
 	}
 
 	exp := []string{
-		"ref/db/seed:Users",
-		"ref/db:Seed",
-		"ref/task:Another",
-		"ref/task:Something",
+		"ref/db.Seed",
+		"ref/db/seed.Users",
+		"ref/task.Another",
+		"ref/task.Something",
 	}
 	r.Equal(exp, act)
 }
