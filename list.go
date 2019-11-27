@@ -13,6 +13,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/gobuffalo/here"
+	"golang.org/x/sync/errgroup"
 )
 
 var defaultIgnoredFolders = []string{".", "_", "vendor", "node_modules", "testdata"}
@@ -35,7 +36,10 @@ func List(root string) ([]*Task, error) {
 		return nil, err
 	}
 
+	wg := errgroup.Group{}
+
 	var tasks []*Task
+
 	err = filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -61,14 +65,23 @@ func List(root string) ([]*Task, error) {
 			}
 		}
 
-		tsk, err := parse(path)
-		if err != nil {
-			return err
-		}
-		tasks = append(tasks, tsk...)
+		wg.Go(func() error {
+			fmt.Println(">>>TODO list.go:46: path ", path)
+			defer fmt.Println("finished ", path)
+			tsk, err := parse(path)
+			if err != nil {
+				return err
+			}
+			tasks = append(tasks, tsk...)
+			return nil
+		})
 
 		return nil
 	})
+
+	if err := wg.Wait(); err != nil {
+		return nil, err
+	}
 
 	sort.Slice(tasks, func(i, j int) bool {
 		return tasks[i].String() < tasks[j].String()
