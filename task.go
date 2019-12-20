@@ -3,6 +3,7 @@ package jim
 import (
 	"fmt"
 	"path"
+	"path/filepath"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -27,11 +28,6 @@ func New(args []string) (*Task, error) {
 		return nil, fmt.Errorf("missing task name")
 	}
 
-	parts := strings.Split(args[0], ":")
-	if len(parts) < 1 {
-		return nil, fmt.Errorf("malformed task name %s", args[0])
-	}
-
 	h := here.New()
 
 	info, err := h.Current()
@@ -44,21 +40,17 @@ func New(args []string) (*Task, error) {
 		Args: args[1:],
 	}
 
-	var pkg string
-	var name string
-
-	if len(parts) == 1 {
-		pkg = info.ImportPath
-		name = parts[0]
-	} else {
-		pkg = strings.Join(parts[:len(parts)-1], "/")
-		if !strings.HasPrefix(pkg, info.ImportPath) {
-			pkg = path.Join(info.ImportPath, pkg)
-		}
-		name = parts[len(parts)-1]
+	in := args[0]
+	t.Name = filepath.Ext(in)
+	if len(t.Name) == 0 {
+		t.Name = in
 	}
-	t.Pkg = pkg
-	t.Name = name
+	t.Pkg = strings.TrimSuffix(in, t.Name)
+	t.Name = strings.TrimPrefix(t.Name, ".")
+
+	if !strings.HasPrefix(t.Pkg, info.Module.Path) {
+		t.Pkg = path.Join(info.Module.Path, t.Pkg)
+	}
 
 	rn, _ := utf8.DecodeRuneInString(t.Name)
 	if !unicode.IsUpper(rn) {
