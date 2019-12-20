@@ -2,12 +2,35 @@ package jim
 
 import (
 	"context"
+	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"text/template"
 )
 
+type errNoTask struct {
+	t   *Task
+	err error
+}
+
+func (e errNoTask) Error() string {
+	return e.Error()
+}
+
+func (e errNoTask) Task() *Task {
+	return e.t
+}
+
 func Run(ctx context.Context, t *Task) error {
+	c := exec.CommandContext(ctx, "go", "doc", fmt.Sprintf("%s.%s", t.Pkg, t.Name))
+	if err := c.Run(); err != nil {
+		return errNoTask{
+			err: err,
+			t:   t,
+		}
+	}
+
 	od := filepath.Join(t.Dir, ".jim")
 	out := filepath.Join(od, "main.go")
 	os.MkdirAll(od, 0755)
@@ -35,7 +58,7 @@ func Run(ctx context.Context, t *Task) error {
 	args := []string{"run", out}
 	args = append(args, t.Args...)
 
-	c := command(ctx, "go", args...)
+	c = command(ctx, "go", args...)
 	if err := c.Run(); err != nil {
 		return err
 	}

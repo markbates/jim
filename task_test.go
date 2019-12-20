@@ -15,7 +15,7 @@ func Test_New(t *testing.T) {
 	_, err = New([]string{"x"})
 	r.Error(err)
 
-	k, err := New([]string{"db/seed:Users", "a", "b", "c"})
+	k, err := New([]string{"db/seed.Users", "a", "b", "c"})
 	r.NoError(err)
 
 	r.NotZero(k)
@@ -32,7 +32,7 @@ func Test_New(t *testing.T) {
 	r.Equal("jim", k.Sel)
 	r.Equal("Users", k.Name)
 
-	k, err = New([]string{"github.com/markbates/jim:Jim"})
+	k, err = New([]string{"github.com/markbates/jim.Jim"})
 	r.NoError(err)
 
 	r.NotZero(k)
