@@ -55,10 +55,17 @@ func Run(ctx context.Context, t *Task) error {
 		return err
 	}
 
-	args := []string{"run", out}
-	args = append(args, t.Args...)
+	bin := filepath.Join(od, "james")
+	bargs := []string{"build", "-o", bin}
+	bargs = append(bargs, t.BuildArgs...)
+	bargs = append(bargs, out)
 
-	c = command(ctx, "go", args...)
+	c = command(ctx, "go", bargs...)
+	if err := c.Run(); err != nil {
+		return err
+	}
+
+	c = command(ctx, bin, t.Args...)
 	if err := c.Run(); err != nil {
 		return err
 	}

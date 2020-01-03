@@ -13,10 +13,11 @@ import (
 
 type Task struct {
 	here.Info
-	Args []string
-	Pkg  string // github.com/foo/bar
-	Sel  string // bar
-	Name string // Something
+	BuildArgs []string // -tags foo -v
+	Args      []string
+	Pkg       string // github.com/foo/bar
+	Sel       string // bar
+	Name      string // Something
 }
 
 func (t Task) String() string {
