@@ -21,7 +21,7 @@ type Task struct {
 }
 
 func (t Task) String() string {
-	return fmt.Sprintf("%s:%s", t.Pkg, t.Name)
+	return fmt.Sprintf("%s.%s", t.Pkg, t.Name)
 }
 
 func New(args []string) (*Task, error) {

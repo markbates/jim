@@ -75,12 +75,12 @@ func Users(ctx context.Context, args []string) error {
 To run the above mentioned task we can use the `jim` command:
 
 ```bash
-$ jim db/seed:Users 1 2 3 4
+$ jim db/seed.Users 1 2 3 4
 
 loading users [1 2 3 4]
 ```
 
-Let's break down the `db/seed:Users` bit, shall we? The last part, `Users` is the name of the function that will be run. This **MUST** match capitalization.
+Let's break down the `db/seed.Users` bit, shall we? The last part, `Users` is the name of the function that will be run. This **MUST** match capitalization.
 
 The `db/seed` part is converted to the package `<module path>/db/seed` which, hopefully, contains a `Users` function that matches the correct API.
 
@@ -93,7 +93,7 @@ To run your task via the API in your application, give it a `context.Context`, s
 The `jim -h` flag, followed by the task will print the GoDoc for that function.
 
 ```bash
-$ jim -h db/seed:Users
+$ jim -h db/seed.Users
 
 package seed // import "ref/db/seed"
 
@@ -106,8 +106,8 @@ func Users(ctx context.Context, args []string) error
 ```bash
 $ jim list
 
-ref/db/seed:Users
-ref/db:Seed
-ref/task:Another
-ref/task:Something
+ref/db/seed.Users
+ref/db.Seed
+ref/task.Another
+ref/task.Something
 ```
